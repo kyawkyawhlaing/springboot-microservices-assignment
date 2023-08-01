@@ -1,15 +1,15 @@
 package net.ms.employeeservice.service;
 
-import java.sql.SQLException;
+import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
-import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import lombok.AllArgsConstructor;
 import net.ms.employeeservice.exception.CustomSQLException;
 import net.ms.employeeservice.exception.ExceptionUtil;
+import net.ms.employeeservice.exception.ResourceNotFoundException;
 import net.ms.employeeservice.mapper.EmployeeMapper;
 import net.ms.employeeservice.model.dto.EmployeeDto;
 import net.ms.employeeservice.model.entity.Employee;
@@ -48,6 +48,18 @@ public class EmployeeServiceImpl implements EmployeeService {
 		EmployeeDto savedEmployeeDto = EmployeeMapper.MAPPER.mapToEmployeeDto(savedEmployee);
 
 		return savedEmployeeDto;
+	}
+
+	@Override
+	public EmployeeDto getEmployeeById(Long id) {
+		
+		Optional<Employee> exsitingEmployee = Optional.of(employeeRepository.findEmployeeById(id).orElseThrow(
+				() -> new ResourceNotFoundException("User", "id", id)
+				));
+		
+		return EmployeeMapper.MAPPER.mapToEmployeeDto(exsitingEmployee.get());
+		
+		
 	}
 
 }
